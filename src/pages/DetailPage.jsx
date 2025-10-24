@@ -7,12 +7,16 @@ import {
   unarchiveNote as unarchiveNoteAPI,
   deleteNote as deleteNoteAPI,
 } from '../utils/network-data';
+import { LoadingOverlay } from '../components/LoadingOverlay';
 
 export function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -49,25 +53,49 @@ export function DetailPage() {
   const handleDelete = async () => {
     const confirmed = window.confirm('Apakah Anda yakin ingin menghapus catatan ini?');
     if (confirmed) {
+      setActionLoading(true);
+      setLoadingMessage('Menghapus catatan...');
       try {
-        await deleteNoteAPI(id);
-        navigate('/');
+        const { error } = await deleteNoteAPI(id);
+        if (!error) {
+          setSuccess(true);
+          setTimeout(() => {
+            navigate('/');
+          }, 800);
+        } else {
+          alert('Gagal menghapus catatan');
+          setActionLoading(false);
+        }
       } catch (err) {
         alert('Gagal menghapus catatan');
+        setActionLoading(false);
       }
     }
   };
 
   const handleArchive = async () => {
+    setActionLoading(true);
+    setLoadingMessage(note.archived ? 'Membatalkan arsip...' : 'Mengarsip catatan...');
     try {
+      let result;
       if (note.archived) {
-        await unarchiveNoteAPI(id);
+        result = await unarchiveNoteAPI(id);
       } else {
-        await archiveNoteAPI(id);
+        result = await archiveNoteAPI(id);
       }
-      navigate('/');
+      
+      if (!result.error) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/');
+        }, 800);
+      } else {
+        alert('Gagal mengarsip catatan');
+        setActionLoading(false);
+      }
     } catch (err) {
       alert('Gagal mengarsip catatan');
+      setActionLoading(false);
     }
   };
 
@@ -77,17 +105,18 @@ export function DetailPage() {
 
   return (
     <main>
+      {actionLoading && <LoadingOverlay message={loadingMessage} success={success} />}
       <div className="detail-page">
         <h2 className="detail-page__title">{note.title}</h2>
         <p className="detail-page__createdAt">{showFormattedDate(note.createdAt)}</p>
         <div className="detail-page__body">{note.body}</div>
       </div>
       <div className="detail-page__action">
-        <button onClick={handleBack} className="action" title="Kembali">←</button>
-        <button onClick={handleArchive} className="action" title={note.archived ? "Batal Arsip" : "Arsip"}>
+        <button onClick={handleBack} className="action" title="Kembali" disabled={actionLoading}>←</button>
+        <button onClick={handleArchive} className="action" title={note.archived ? "Batal Arsip" : "Arsip"} disabled={actionLoading}>
           {note.archived ? '📂' : '📁'}
         </button>
-        <button onClick={handleDelete} className="action" title="Hapus">🗑️</button>
+        <button onClick={handleDelete} className="action" title="Hapus" disabled={actionLoading}>🗑️</button>
       </div>
     </main>
   );

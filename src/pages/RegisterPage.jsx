@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register as registerAPI } from '../utils/network-data';
+import { LoadingOverlay } from '../components/LoadingOverlay';
 
 export function RegisterPage() {
   const [name, setName] = useState('');
@@ -8,6 +9,7 @@ export function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -28,18 +30,27 @@ export function RegisterPage() {
     setLoading(true);
 
     try {
-      await registerAPI({ name, email, password });
-      alert('Registrasi berhasil! Silakan login.');
-      navigate('/login');
+      const { error } = await registerAPI({ name, email, password });
+      if (!error) {
+        // Show success animation
+        setSuccess(true);
+        setTimeout(() => {
+          alert('Registrasi berhasil! Silakan login.');
+          navigate('/login');
+        }, 800);
+      } else {
+        setError(error);
+        setLoading(false);
+      }
     } catch (err) {
       setError(err.message || 'Registrasi gagal');
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <main>
+      {loading && <LoadingOverlay message="Sedang mendaftar..." success={success} />}
       <h2>Register</h2>
       <div className="input-register">
         <form onSubmit={handleSubmit}>
@@ -50,6 +61,7 @@ export function RegisterPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            disabled={loading}
           />
           <label>Email</label>
           <input
@@ -57,6 +69,7 @@ export function RegisterPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
           <label>Password</label>
           <input
@@ -64,6 +77,7 @@ export function RegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={loading}
           />
           <label>Konfirmasi Password</label>
           <input
@@ -71,6 +85,7 @@ export function RegisterPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
+            disabled={loading}
           />
           <button type="submit" disabled={loading}>
             {loading ? 'Loading...' : 'Daftar'}
