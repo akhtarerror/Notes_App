@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { login as loginAPI } from '../utils/network-data';
 import { putAccessToken } from '../utils/network-data';
 import { LoadingOverlay } from '../components/LoadingOverlay';
+import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 
 export function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -11,8 +13,10 @@ export function LoginPage({ onLogin }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const { locale, toggleLocale, t } = useLocale();
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -42,12 +46,20 @@ export function LoginPage({ onLogin }) {
 
   return (
     <main>
-      {loading && <LoadingOverlay message="Sedang login..." success={success} />}
-      <h2>Login</h2>
+      {loading && <LoadingOverlay message={t('loading')} success={success} />}
+      <div className="settings-buttons" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', margin: '10px' }}>
+        <button onClick={toggleLocale} className="toggle-locale" title="Toggle Language">
+          {locale === 'id' ? '🇬🇧 EN' : '🇮🇩 ID'}
+        </button>
+        <button onClick={toggleTheme} className="toggle-theme" title="Toggle Theme">
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
+      <h2>{t('login')}</h2>
       <div className="input-login">
         <form onSubmit={handleSubmit}>
           {error && <p style={{ color: 'var(--error)', marginBottom: '16px' }}>{error}</p>}
-          <label>Email</label>
+          <label>{t('email')}</label>
           <input
             type="email"
             value={email}
@@ -55,7 +67,7 @@ export function LoginPage({ onLogin }) {
             required
             disabled={loading}
           />
-          <label>Password</label>
+          <label>{t('password')}</label>
           <input
             type="password"
             value={password}
@@ -64,11 +76,11 @@ export function LoginPage({ onLogin }) {
             disabled={loading}
           />
           <button type="submit" disabled={loading}>
-            {loading ? 'Loading...' : 'Login'}
+            {loading ? t('loading') : t('login')}
           </button>
         </form>
         <p style={{ marginTop: '16px', textAlign: 'center' }}>
-          Belum punya akun? <Link to="/register">Daftar di sini</Link>
+          {t('noAccount')} <Link to="/register">{t('registerHere')}</Link>
         </p>
       </div>
     </main>

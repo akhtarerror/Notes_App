@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register as registerAPI } from '../utils/network-data';
 import { LoadingOverlay } from '../components/LoadingOverlay';
+import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 
 export function RegisterPage() {
   const [name, setName] = useState('');
@@ -12,18 +14,20 @@ export function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const { locale, toggleLocale, t } = useLocale();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Password dan konfirmasi password tidak sama');
+      setError(t('passwordMismatch') || 'Password dan konfirmasi password tidak sama');
       return;
     }
 
     if (password.length < 6) {
-      setError('Password minimal 6 karakter');
+      setError(t('passwordTooShort') || 'Password minimal 6 karakter');
       return;
     }
 
@@ -35,7 +39,7 @@ export function RegisterPage() {
         // Show success animation
         setSuccess(true);
         setTimeout(() => {
-          alert('Registrasi berhasil! Silakan login.');
+          alert(t('registerSuccess'));
           navigate('/login');
         }, 800);
       } else {
@@ -43,19 +47,27 @@ export function RegisterPage() {
         setLoading(false);
       }
     } catch (err) {
-      setError(err.message || 'Registrasi gagal');
+      setError(err.message || t('registerFailed'));
       setLoading(false);
     }
   };
 
   return (
     <main>
-      {loading && <LoadingOverlay message="Sedang mendaftar..." success={success} />}
-      <h2>Register</h2>
+      {loading && <LoadingOverlay message={t('loading')} success={success} />}
+      <div className="settings-buttons" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', margin: '10px' }}>
+        <button onClick={toggleLocale} className="toggle-locale" title="Toggle Language">
+          {locale === 'id' ? '🇬🇧 EN' : '🇮🇩 ID'}
+        </button>
+        <button onClick={toggleTheme} className="toggle-theme" title="Toggle Theme">
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
+      <h2>{t('register')}</h2>
       <div className="input-register">
         <form onSubmit={handleSubmit}>
           {error && <p style={{ color: 'var(--error)', marginBottom: '16px' }}>{error}</p>}
-          <label>Nama</label>
+          <label>{t('name')}</label>
           <input
             type="text"
             value={name}
@@ -63,7 +75,7 @@ export function RegisterPage() {
             required
             disabled={loading}
           />
-          <label>Email</label>
+          <label>{t('email')}</label>
           <input
             type="email"
             value={email}
@@ -71,7 +83,7 @@ export function RegisterPage() {
             required
             disabled={loading}
           />
-          <label>Password</label>
+          <label>{t('password')}</label>
           <input
             type="password"
             value={password}
@@ -79,7 +91,7 @@ export function RegisterPage() {
             required
             disabled={loading}
           />
-          <label>Konfirmasi Password</label>
+          <label>{t('confirmPassword')}</label>
           <input
             type="password"
             value={confirmPassword}
@@ -88,11 +100,11 @@ export function RegisterPage() {
             disabled={loading}
           />
           <button type="submit" disabled={loading}>
-            {loading ? 'Loading...' : 'Daftar'}
+            {loading ? t('loading') : t('register')}
           </button>
         </form>
         <p style={{ marginTop: '16px', textAlign: 'center' }}>
-          Sudah punya akun? <Link to="/login">Login di sini</Link>
+          {t('haveAccount')} <Link to="/login">{t('loginHere')}</Link>
         </p>
       </div>
     </main>
