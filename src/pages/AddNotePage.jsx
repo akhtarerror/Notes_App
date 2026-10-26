@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addNote as addNoteAPI } from '../utils/network-data';
 import { LoadingOverlay } from '../components/LoadingOverlay';
+import { BackIcon, CheckIcon } from '../components/Icons';
 
 export function AddNotePage() {
   const [title, setTitle] = useState('');
@@ -71,9 +72,9 @@ export function AddNotePage() {
         />
       </div>
       <div className="add-new-page__action">
-        <button onClick={handleBack} className="action" title="Kembali" disabled={loading}>←</button>
-        <button onClick={handleSubmit} className="action" title="Simpan" disabled={loading}>✓</button>
+        <button onClick={handleBack} className="action" title="Kembali" aria-label="Kembali" disabled={loading}><BackIcon /></button>
+        <button onClick={handleSubmit} className="action action--primary" title="Simpan" aria-label="Simpan" disabled={loading}><CheckIcon /></button>
       </div>
     </main>
   );
-}
+}

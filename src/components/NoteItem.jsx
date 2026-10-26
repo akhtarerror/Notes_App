@@ -12,4 +12,4 @@ export function NoteItem({ note }) {
       <p className="note-item__body">{note.body}</p>
     </div>
   );
-}
+}

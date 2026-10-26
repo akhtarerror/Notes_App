@@ -8,6 +8,7 @@ import {
   deleteNote as deleteNoteAPI,
 } from '../utils/network-data';
 import { LoadingOverlay } from '../components/LoadingOverlay';
+import { BackIcon, ArchiveIcon, UnarchiveIcon, TrashIcon } from '../components/Icons';
 
 export function DetailPage() {
   const { id } = useParams();
@@ -44,7 +45,7 @@ export function DetailPage() {
       <main>
         <h2>Catatan tidak ditemukan</h2>
         <div className="detail-page__action">
-          <button onClick={() => navigate('/')} className="action" title="Kembali">←</button>
+          <button onClick={() => navigate('/')} className="action" title="Kembali" aria-label="Kembali"><BackIcon /></button>
         </div>
       </main>
     );
@@ -112,12 +113,12 @@ export function DetailPage() {
         <div className="detail-page__body">{note.body}</div>
       </div>
       <div className="detail-page__action">
-        <button onClick={handleBack} className="action" title="Kembali" disabled={actionLoading}>←</button>
-        <button onClick={handleArchive} className="action" title={note.archived ? "Batal Arsip" : "Arsip"} disabled={actionLoading}>
-          {note.archived ? '📂' : '📁'}
+        <button onClick={handleBack} className="action" title="Kembali" aria-label="Kembali" disabled={actionLoading}><BackIcon /></button>
+        <button onClick={handleArchive} className="action" title={note.archived ? "Batal Arsip" : "Arsip"} aria-label={note.archived ? "Batal Arsip" : "Arsip"} disabled={actionLoading}>
+          {note.archived ? <UnarchiveIcon /> : <ArchiveIcon />}
         </button>
-        <button onClick={handleDelete} className="action" title="Hapus" disabled={actionLoading}>🗑️</button>
+        <button onClick={handleDelete} className="action action--danger" title="Hapus" aria-label="Hapus" disabled={actionLoading}><TrashIcon /></button>
       </div>
     </main>
   );
-}
+}

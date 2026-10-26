@@ -12,15 +12,8 @@ export function NotFoundPage() {
         <div className="not-found__action">
           <button
             onClick={() => navigate('/')}
-            className="action"
+            className="action action--primary"
             title="Kembali ke Beranda"
-            style={{
-              backgroundColor: '#f0f0f0',
-              borderRadius: '12px',
-              padding: '50px',
-              border: 'none',
-              cursor: 'pointer'
-            }}
           >
             ← Kembali ke Beranda
           </button>
@@ -28,4 +21,4 @@ export function NotFoundPage() {
       </div>
     </main>
   );
-}
+}

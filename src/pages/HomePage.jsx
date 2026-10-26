@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { SearchBar } from '../components/SearchBar';
 import { NotesList } from '../components/NotesList';
 import { getActiveNotes as getActiveNotesAPI } from '../utils/network-data';
+import { PlusIcon } from '../components/Icons';
 
 export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,7 +52,9 @@ export function HomePage() {
       <SearchBar keyword={keyword} onKeywordChange={handleKeywordChange} />
       <NotesList notes={filteredNotes} />
       <div className="homepage__action">
-        <Link to="/notes/new" className="action" title="Tambah">+</Link>
+        <Link to="/notes/new" className="action action--primary action--fab" title="Tambah" aria-label="Tambah">
+          <PlusIcon size={28} />
+        </Link>
       </div>
     </main>
   );

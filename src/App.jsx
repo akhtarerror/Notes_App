@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { getAccessToken, removeAccessToken, getUserLogged } from './utils/network-data';
-import { useTheme } from './context/ThemeContext';
 import { useLocale } from './context/LocaleContext';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -12,12 +11,14 @@ import { ArchivedPage } from './pages/ArchivedPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoadingBar } from './components/LoadingBar';
+import { LocaleSwitch } from './components/LocaleSwitch';
+import { ThemeToggle } from './components/ThemeToggle';
+import { LogoutIcon } from './components/Icons';
 
 function App() {
   const [authedUser, setAuthedUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { theme, toggleTheme } = useTheme();
-  const { locale, toggleLocale, t } = useLocale();
+  const { t } = useLocale();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -62,26 +63,35 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <header>
-          <h1>{t('appTitle')}</h1>
+        <header className="app-header">
+          <h1 className="app-header__title">{t('appTitle')}</h1>
           {authedUser && (
             <>
               <nav className="navigation">
                 <ul>
-                  <li><Link to="/">{t('active')}</Link></li>
-                  <li><Link to="/archived">{t('archived')}</Link></li>
+                  <li><NavLink to="/" end>{t('active')}</NavLink></li>
+                  <li><NavLink to="/archived">{t('archived')}</NavLink></li>
                 </ul>
               </nav>
-              <button onClick={toggleLocale} className="toggle-locale" title="Toggle Language">
-                {locale === 'id' ? '🇬🇧 EN' : '🇮🇩 ID'}
-              </button>
-              <button onClick={toggleTheme} className="toggle-theme" title="Toggle Theme">
-                {theme === 'dark' ? '☀️' : '🌙'}
-              </button>
-              <button onClick={handleLogout} className="button-logout">
-                <span>{authedUser.name}</span>
-                <span>🚪</span>
-              </button>
+              <div className="app-header__actions">
+                <LocaleSwitch />
+                <ThemeToggle />
+                <span className="user-chip" title={authedUser.name}>
+                  <span className="user-chip__avatar" aria-hidden="true">
+                    {(authedUser.name || '?').charAt(0).toUpperCase()}
+                  </span>
+                  <span className="user-chip__name">{authedUser.name}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="icon-button icon-button--logout"
+                  title={t('logout')}
+                  aria-label={t('logout')}
+                >
+                  <LogoutIcon size={20} />
+                </button>
+              </div>
             </>
           )}
         </header>
@@ -108,4 +118,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;

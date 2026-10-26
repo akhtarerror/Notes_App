@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register as registerAPI } from '../utils/network-data';
 import { LoadingOverlay } from '../components/LoadingOverlay';
-import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import { LocaleSwitch } from '../components/LocaleSwitch';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export function RegisterPage() {
   const [name, setName] = useState('');
@@ -14,8 +15,7 @@ export function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
-  const { locale, toggleLocale, t } = useLocale();
+  const { t } = useLocale();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,18 +55,14 @@ export function RegisterPage() {
   return (
     <main>
       {loading && <LoadingOverlay message={t('loading')} success={success} />}
-      <div className="settings-buttons" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', margin: '10px' }}>
-        <button onClick={toggleLocale} className="toggle-locale" title="Toggle Language">
-          {locale === 'id' ? '🇬🇧 EN' : '🇮🇩 ID'}
-        </button>
-        <button onClick={toggleTheme} className="toggle-theme" title="Toggle Theme">
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
+      <div className="auth-settings">
+        <LocaleSwitch />
+        <ThemeToggle />
       </div>
-      <h2>{t('register')}</h2>
+      <h2 className="auth-title">{t('register')}</h2>
       <div className="input-register">
         <form onSubmit={handleSubmit}>
-          {error && <p style={{ color: 'var(--error)', marginBottom: '16px' }}>{error}</p>}
+          {error && <p className="form-error" role="alert">{error}</p>}
           <label>{t('name')}</label>
           <input
             type="text"
@@ -103,10 +99,10 @@ export function RegisterPage() {
             {loading ? t('loading') : t('register')}
           </button>
         </form>
-        <p style={{ marginTop: '16px', textAlign: 'center' }}>
+        <p className="auth-footer">
           {t('haveAccount')} <Link to="/login">{t('loginHere')}</Link>
         </p>
       </div>
     </main>
   );
-}
+}

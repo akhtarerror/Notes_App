@@ -52,4 +52,4 @@ export function ArchivedPage() {
       <NotesList notes={filteredNotes} />
     </main>
   );
-}
+}

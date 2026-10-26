@@ -6,4 +6,4 @@ export function LoadingBar() {
       <div className="loading-bar__progress"></div>
     </div>
   );
-}
+}

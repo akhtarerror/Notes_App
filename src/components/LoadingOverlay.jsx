@@ -69,4 +69,4 @@ export function LoadingOverlay({ message = 'Loading...', success = false }) {
       `}</style>
     </div>
   );
-}
+}
